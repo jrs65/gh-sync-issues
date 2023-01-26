@@ -243,8 +243,15 @@ def pull(output: Path, repo: str):
 def push(input: Path, repo: str, dry_run: bool, update_input: bool):
     """Add and update issues from the INPUT file into a Github repository.
 
-    INPUT must be a yaml formatted file. Unless overridden it will be updated with new
-    issue numbers.
+    INPUT must be a yaml formatted file.
+
+    Any issue without a `number` field are presumed to be new and will be added to the
+    repository. Unless overridden with the `--no-update-input` option the input file
+    will be updated with the new issue numbers.
+
+    The issue `title` is a required field. An optional text `body` can given for the
+    main issue body, as can lists of names of `assignees` and string `labels` (which
+    will be created if they don't exist already).
     """
 
     with open(input, "r") as fh:
