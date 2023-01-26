@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gh-sync-issues"
+description = "Synchronise Github issues to/from a local YAML for faster editing."
+keywords = ["gh-extension"]
+requires-python = ">=3.10"
+dynamic = ["readme"]
+version = "2023.01"
+license = {text = "MIT"}
+dependencies = [
+    "click >= 8.0",
+    "pygithub",
+    "ruamel.yaml",
+]
+scripts = {gh-sync-issues = "gh_sync_issues:cli"}
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
