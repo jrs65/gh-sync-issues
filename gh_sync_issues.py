@@ -8,9 +8,11 @@ import github
 import github.Repository as ghrepository
 import github.Issue as ghissue
 
-from ruamel import yaml
+from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import LiteralScalarString, PlainScalarString
 from ruamel.yaml.comments import CommentedSeq
+
+yaml = YAML()
 
 
 def comp_newline(a, b):
@@ -127,11 +129,11 @@ class Issue:
         )
 
     @classmethod
-    def list_to_yaml(cls, issues: list["Issue"]) -> yaml.CommentedSeq:
+    def list_to_yaml(cls, issues: list["Issue"]) -> CommentedSeq:
         """Convert a list of issues into a nicely formatted representation."""
 
         s = [issue.to_dict(yaml=True) for issue in issues]
-        s = yaml.CommentedSeq(s)
+        s = CommentedSeq(s)
 
         # Improve the formatting by adding newlines between issues
         for i in range(1, len(s)):
@@ -215,7 +217,7 @@ def pull(output: Path, repo: str):
     with open(output, "w") as fh:
         yaml_issue_list = Issue.list_to_yaml(issues)
 
-        yaml.round_trip_dump(yaml_issue_list, stream=fh)
+        yaml.dump(yaml_issue_list, stream=fh)
 
 
 @click.argument("input", type=click.Path(exists=True, dir_okay=False, path_type=Path))
@@ -255,7 +257,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
     """
 
     with open(input, "r") as fh:
-        issues = yaml.round_trip_load(fh)
+        issues = yaml.load(fh)
 
     repo = resolve_repo(repo)
 
@@ -275,7 +277,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
 
             click.echo(f"=== Updating existing issue (#{existing_issue.number}) ===")
             click.echo("Changes:")
-            click.echo(yaml.round_trip_dump(existing_issue._dirty_dict()))
+            click.echo(yaml.dump(existing_issue._dirty_dict()))
             click.echo("")
 
             if not dry_run:
@@ -293,7 +295,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
 
             click.echo(f"=== Adding new issue ===")
             click.echo(
-                yaml.round_trip_dump(new_issue.to_dict(yaml=True, skip_missing=True))
+                yaml.dump(new_issue.to_dict(yaml=True, skip_missing=True))
             )
             click.echo("")
 
@@ -311,7 +313,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
         if update_input:
             click.echo("=== Updating input file ===")
             with open(input, "w") as fh:
-                yaml.round_trip_dump(issues, stream=fh)
+                yaml.dump(issues, stream=fh)
         else:
             click.echo("=== Not updating input file. UPDATE MANUALLY ===")
 
