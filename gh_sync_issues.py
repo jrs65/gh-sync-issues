@@ -12,7 +12,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import LiteralScalarString, PlainScalarString
 from ruamel.yaml.comments import CommentedSeq
 
-yaml = YAML()
+yaml = YAML(typ=["rt", "string"])
 
 
 def comp_newline(a, b):
@@ -88,7 +88,6 @@ class Issue:
         field_names = [f.name for f in dataclasses.fields(self)]
 
         for k, v in kwargs.items():
-
             if k not in field_names:
                 continue
 
@@ -264,7 +263,6 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
     new_issues_added = False
 
     for issue in issues:
-
         # If number is in there the issue currently exists
         if "number" in issue:
             gh_issue = repo.get_issue(int(issue["number"]))
@@ -277,7 +275,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
 
             click.echo(f"=== Updating existing issue (#{existing_issue.number}) ===")
             click.echo("Changes:")
-            click.echo(yaml.dump(existing_issue._dirty_dict()))
+            click.echo(yaml.dumps(existing_issue._dirty_dict()))
             click.echo("")
 
             if not dry_run:
@@ -294,9 +292,7 @@ def push(input: Path, repo: str, dry_run: bool, update_input: bool):
                 raise click.UsageError("All issues must have a title.")
 
             click.echo(f"=== Adding new issue ===")
-            click.echo(
-                yaml.dump(new_issue.to_dict(yaml=True, skip_missing=True))
-            )
+            click.echo(yaml.dumps(new_issue.to_dict(yaml=True, skip_missing=True)))
             click.echo("")
 
             if not dry_run:

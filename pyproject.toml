@@ -13,7 +13,7 @@ license = {text = "MIT"}
 dependencies = [
     "click >= 8.0",
     "pygithub",
-    "ruamel.yaml",
+    "ruamel.yaml.string",
 ]
 scripts = {gh-sync-issues = "gh_sync_issues:cli"}
 
